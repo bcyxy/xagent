@@ -23,6 +23,7 @@ type shellParamsT struct {
 //Do xxx
 func Do(paramsStr string, timeout uint32) ([]string, error) {
 	rstData := []string{}
+	return rstData, nil
 
 	// 解析参数
 	params := shellParamsT{}
@@ -82,7 +83,7 @@ func TestSellTool() {
 
 	_, err := Do(testReq, 30)
 	if err != nil {
-		fmt.Printf("%v\n", err)
+		//fmt.Printf("%v\n", err)
 	}
 }
 
