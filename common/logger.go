@@ -67,3 +67,10 @@ func LogWarn(format string, a ...interface{}) {
 	ZLog.Warn(logMsg)
 	fmt.Printf("WARN: %s\n", logMsg)
 }
+
+// LogError xxx
+func LogError(format string, a ...interface{}) {
+	logMsg := fmt.Sprintf(format, a...)
+	ZLog.Error(logMsg)
+	fmt.Printf("ERRO: %s\n", logMsg)
+}

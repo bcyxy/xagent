@@ -9,7 +9,7 @@ import (
 	"time"
 	"xagent/common"
 	"xagent/glbval"
-	"xagent/shelltool"
+	"xagent/httpser"
 )
 
 // 在编译时赋值的变量
@@ -34,20 +34,25 @@ func main() {
 	err = common.InitConf()
 	if err != nil {
 		fmt.Printf("[Error]: InitConf failed. err=%v", err)
+		return
 	}
 
 	// 初始化日志
 	err = common.InitLogger()
 	if err != nil {
 		fmt.Printf("[Error]: InitLogger failed. err=%v", err)
+		return
 	}
 	common.LogInfo("Program git commitID: %s", glbval.GitCommitID)
 	common.LogInfo("Program build time:   %s", glbval.BuildTime)
 
-	// xxx
-	shelltool.TestSellTool()
-
 	// 启动HTTP服务
+	err = httpser.Start()
+	if err != nil {
+		common.LogError("Start http service failed. err=%v", err)
+		return
+	}
+	common.LogInfo("Start http service success.")
 
 	// 等待停止信号
 	chanSignal := make(chan os.Signal, 1)
