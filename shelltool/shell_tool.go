@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+	"xagent/httpser"
 
 	expect "github.com/google/goexpect"
 )
+
+func init() {
+	httpser.HandlersMap["SHELL"] = Do
+}
 
 type interactItemT struct {
 	Expect  string `json:"expect"`
