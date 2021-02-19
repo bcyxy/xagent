@@ -3,7 +3,7 @@ package common
 import (
 	"fmt"
 	"path"
-	"xagent/glbval"
+	"xagent/src/glbval"
 
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"

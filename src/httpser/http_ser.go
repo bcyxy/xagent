@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"xagent/common"
+	"xagent/src/common"
 )
 
 //HdlFunc xxx

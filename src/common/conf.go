@@ -2,7 +2,7 @@ package common
 
 import (
 	"path"
-	"xagent/glbval"
+	"xagent/src/glbval"
 
 	"github.com/Unknwon/goconfig"
 )

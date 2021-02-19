@@ -7,9 +7,9 @@ import (
 	"path"
 	"path/filepath"
 	"time"
-	"xagent/common"
-	"xagent/glbval"
-	"xagent/httpser"
+	"xagent/src/common"
+	"xagent/src/glbval"
+	"xagent/src/httpser"
 )
 
 // 在编译时赋值的变量
