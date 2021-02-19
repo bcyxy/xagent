@@ -11,17 +11,16 @@ import (
 	"xagent/src/shelltool"
 )
 
-//HdlFunc xxx
-type HdlFunc func(string, uint32) ([]string, error)
+type handlerFuncT func(string, uint32) (interface{}, error)
 
-//HandlersMap xxx
-var HandlersMap map[string]HdlFunc
+//请求处理函数映射表
+var handlerMap map[string]handlerFuncT = make(map[string]handlerFuncT)
 
 func init() {
-	HandlersMap["SHELL"] = shelltool.Do
+	handlerMap["shell"] = shelltool.Do
 }
 
-//ReqT xxx
+//ReqT 请求结构
 type ReqT struct {
 	ReqType string          `json:"req_type"`
 	Timeout uint32          `json:"timeout"`
@@ -30,12 +29,21 @@ type ReqT struct {
 
 //MyHandler xxx
 func MyHandler(rspWriter http.ResponseWriter, req *http.Request) {
-	common.LogDebug("Receive http request.")
+	common.LogDebug("Receive http request. client=%s", req.RemoteAddr)
+
+	// 暂时只支持POST请求
+	if strings.ToUpper(req.Method) != "POST" {
+		eMsg := fmt.Sprintf("Unsupported http method '%s'", req.Method)
+		rspWriter.WriteHeader(500)
+		fmt.Fprintln(rspWriter, eMsg)
+		common.LogInfo(eMsg)
+		return
+	}
 
 	bodyByte, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		rspWriter.WriteHeader(500)
-		fmt.Fprintln(rspWriter, "Read body failed.")
+		fmt.Fprintf(rspWriter, "Read body failed. err=%v", err)
 		return
 	}
 
@@ -43,23 +51,23 @@ func MyHandler(rspWriter http.ResponseWriter, req *http.Request) {
 	err = json.Unmarshal(bodyByte, &reqBody)
 	if err != nil {
 		rspWriter.WriteHeader(500)
-		fmt.Fprintln(rspWriter, "Read body failed.")
+		fmt.Fprintf(rspWriter, "Loads json failed. err=%v", err)
 		return
 	}
 
-	//处理超时
+	//TODO 处理超时
 
-	hdFunc, ok := HandlersMap[strings.ToUpper(reqBody.ReqType)]
+	hdFunc, ok := handlerMap[reqBody.ReqType]
 	if !ok {
 		rspWriter.WriteHeader(500)
-		fmt.Fprintln(rspWriter, "Read body failed.")
+		fmt.Fprintln(rspWriter, "Find func failed.")
 		return
 	}
 
 	rst, err := hdFunc(string(reqBody.Params), reqBody.Timeout)
 	if err != nil {
 		rspWriter.WriteHeader(500)
-		fmt.Fprintln(rspWriter, "Read body failed.")
+		fmt.Fprintln(rspWriter, "Exec func failed.")
 		return
 	}
 	rspWriter.Header().Set("Content-Type", "application/json")
@@ -67,7 +75,7 @@ func MyHandler(rspWriter http.ResponseWriter, req *http.Request) {
 	rspWriter.Write(jsonStr)
 }
 
-//Start xxx
+//Start 启动HTTP服务
 func Start() error {
 	http.HandleFunc("/", MyHandler)
 
@@ -78,7 +86,8 @@ func Start() error {
 	}()
 
 	go func() {
-		chanErr <- http.ListenAndServe("0.0.0.0:6661", nil)
+		portStr := common.GetConfStr("glb", "http_port", "6661")
+		chanErr <- http.ListenAndServe("0.0.0.0:"+portStr, nil)
 	}()
 
 	return <-chanErr
