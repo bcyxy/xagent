@@ -5,14 +5,9 @@ import (
 	"fmt"
 	"regexp"
 	"time"
-	"xagent/src/httpser"
 
 	expect "github.com/google/goexpect"
 )
-
-func init() {
-	httpser.HandlersMap["SHELL"] = Do
-}
 
 type interactItemT struct {
 	Expect  string `json:"expect"`
@@ -28,7 +23,6 @@ type shellParamsT struct {
 //Do xxx
 func Do(paramsStr string, timeout uint32) ([]string, error) {
 	rstData := []string{}
-	return rstData, nil
 
 	// 解析参数
 	params := shellParamsT{}

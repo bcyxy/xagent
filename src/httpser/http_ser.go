@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 	"xagent/src/common"
+	"xagent/src/shelltool"
 )
 
 //HdlFunc xxx
@@ -15,6 +16,10 @@ type HdlFunc func(string, uint32) ([]string, error)
 
 //HandlersMap xxx
 var HandlersMap map[string]HdlFunc
+
+func init() {
+	HandlersMap["SHELL"] = shelltool.Do
+}
 
 //ReqT xxx
 type ReqT struct {
